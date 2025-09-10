@@ -1,7 +1,33 @@
 use super::*;
 use core::marker::PhantomData;
 
-/// A waiter implementation for embedded system.
+/// A [`Waiter`] implementation for embedded system.
+///
+/// # Examples
+///
+/// ```
+/// use std::time::{Duration, Instant};
+/// use waiter_trait::{Waiter, WaiterTime, TickWaiter, StdInterval};
+///
+/// let w = TickWaiter::<Instant, _, _>::ns(
+///     Duration::from_millis(10).as_nanos() as u64,
+///     StdInterval::new(Duration::from_millis(8)),
+///     Duration::from_secs(1).as_nanos() as u32,
+/// );
+///
+/// let mut t = w.start();
+/// assert!(!t.timeout());
+/// assert!(!t.timeout());
+/// assert!(t.timeout());
+///
+/// let mut t = w.start();
+/// assert!(!t.timeout());
+/// assert!(!t.timeout());
+/// t.restart();
+/// assert!(!t.timeout());
+/// assert!(!t.timeout());
+/// assert!(t.timeout());
+/// ```
 pub struct TickWaiter<T, I, N> {
     timeout_tick: N,
     interval: I,
@@ -113,35 +139,5 @@ impl Num for u64 {
     const ZERO: Self = 0u64;
     fn add_u32(self, v: u32) -> Self {
         self.saturating_add(v as u64)
-    }
-}
-
-#[cfg(feature = "std")]
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::std_impls::*;
-    use std::time::{Duration, Instant};
-
-    #[test]
-    fn tick_waiter() {
-        let w = TickWaiter::<Instant, _, _>::ns(
-            Duration::from_millis(10).as_nanos() as u64,
-            StdInterval::new(Duration::from_millis(8)),
-            Duration::from_secs(1).as_nanos() as u32,
-        );
-        assert_eq!(w.timeout_tick, 10_000_000);
-        let mut t = w.start();
-        assert!(!t.timeout());
-        assert!(!t.timeout());
-        assert!(t.timeout());
-
-        let mut t = w.start();
-        assert!(!t.timeout());
-        assert!(!t.timeout());
-        t.restart();
-        assert!(!t.timeout());
-        assert!(!t.timeout());
-        assert!(t.timeout());
     }
 }

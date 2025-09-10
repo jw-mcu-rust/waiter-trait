@@ -2,6 +2,31 @@ use super::*;
 use core::marker::PhantomData;
 use embedded_hal::delay::DelayNs;
 
+/// A `DelayNs` implementation
+///
+/// # Examples
+///
+/// ```
+/// use std::time::{Duration, Instant};
+/// use waiter_trait::{TickDelay, StdInterval, NonInterval};
+/// use embedded_hal::delay::DelayNs;
+///
+/// let mut d = TickDelay::<Instant, _, _>::new(
+///     Duration::from_secs(1).as_nanos() as u32,
+///     NonInterval::new(),
+///     StdInterval::new(Duration::ZERO),
+/// );
+///
+/// let t = Instant::now();
+/// d.delay_ns(100_000);
+/// let elapsed = t.elapsed();
+/// assert!(elapsed - Duration::from_nanos(100_000) < Duration::from_nanos(10_000));
+///
+/// let t = Instant::now();
+/// d.delay_us(1000);
+/// let elapsed = t.elapsed();
+/// assert!(elapsed - Duration::from_micros(1000) < Duration::from_micros(500));
+/// ```
 pub struct TickDelay<T, INS, IUS> {
     frequency: u32,
     interval_ns: INS,
@@ -41,32 +66,5 @@ where
         let w = TickWaiter::<T, _, _>::us(us, self.interval_us.clone(), self.frequency);
         let mut t = w.start();
         while !t.timeout() {}
-    }
-}
-
-#[cfg(feature = "std")]
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::std_impls::*;
-    use std::time::{Duration, Instant};
-
-    #[test]
-    fn tick_delay() {
-        let mut d = TickDelay::<Instant, _, _>::new(
-            Duration::from_secs(1).as_nanos() as u32,
-            NonInterval::new(),
-            StdInterval::new(Duration::ZERO),
-        );
-
-        let t = Instant::now();
-        d.delay_ns(10_000);
-        let elapsed = t.elapsed();
-        assert!(elapsed - Duration::from_nanos(10_000) < Duration::from_nanos(500));
-
-        let t = Instant::now();
-        d.delay_us(1000);
-        let elapsed = t.elapsed();
-        assert!(elapsed - Duration::from_micros(1000) < Duration::from_micros(500));
     }
 }

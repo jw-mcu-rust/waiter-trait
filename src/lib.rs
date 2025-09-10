@@ -35,6 +35,8 @@
 //! - Implement [`TickInstant`] and [`Interval`] then use [`TickWaiter`].
 //!     - If you want to do nothing in `interval()`, just use [`NonInterval`].
 //! - If you can't use a timer, you can consider to use [`Counter`]
+//!
+//! It also provides a implementation of `DelayNs` named [`TickDelay`]
 
 #![cfg_attr(not(feature = "std"), no_std)]
 

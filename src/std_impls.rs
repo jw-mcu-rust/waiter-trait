@@ -4,6 +4,23 @@ use std::{
     time::{Duration, Instant},
 };
 
+/// A [`Waiter`] implementation for `std`.
+///
+/// # Examples
+///
+/// ```
+/// use std::time::Duration;
+/// use waiter_trait::{Waiter, WaiterTime, StdWaiter};
+///
+/// let w = StdWaiter::new(Duration::from_millis(10), Some(Duration::from_millis(10)));
+/// let mut t = w.start();
+/// assert!(!t.timeout());
+/// assert!(t.timeout());
+///
+/// t.restart();
+/// assert!(!t.timeout());
+/// assert!(t.timeout());
+/// ```
 pub struct StdWaiter {
     timeout: Duration,
     interval: Option<Duration>,
@@ -106,7 +123,7 @@ mod tests {
         assert!(t.timeout());
         assert!(t.timeout());
 
-        let w = StdWaiter::new(Duration::from_millis(10), Some(Duration::from_millis(8)));
+        let w = StdWaiter::new(Duration::from_millis(10), Some(Duration::from_millis(5)));
         let mut t = w.start();
         assert!(!t.timeout());
         assert!(!t.timeout());
