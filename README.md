@@ -1,5 +1,5 @@
 # waiter-trait
-Traits used to wait and timeout.
+Traits used to wait and timeout in a `no-std` embedded system.
 
 ## Features
 
@@ -8,7 +8,7 @@ Traits used to wait and timeout.
 ## Example
 
 ```rust
-use waiter_trait::{Waiter, WaiterInstance, StdWaiter};
+use waiter_trait::{Waiter, WaiterTime, StdWaiter};
 use std::time::Duration;
 
 // Initialize limit time and interval time.

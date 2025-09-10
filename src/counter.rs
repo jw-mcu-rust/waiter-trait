@@ -17,7 +17,7 @@ impl Counter {
 
 impl Waiter for Counter {
     #[inline]
-    fn start(&self) -> impl WaiterInstance {
+    fn start(&self) -> impl WaiterTime {
         CounterInstance {
             count: 0,
             waiter: self,
@@ -30,7 +30,7 @@ pub struct CounterInstance<'a> {
     waiter: &'a Counter,
 }
 
-impl<'a> WaiterInstance for CounterInstance<'a> {
+impl<'a> WaiterTime for CounterInstance<'a> {
     #[inline]
     fn timeout(&mut self) -> bool {
         if self.waiter.retry_times == usize::MAX {
