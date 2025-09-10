@@ -44,6 +44,8 @@ mod non_interval;
 pub use non_interval::*;
 mod tick_waiter;
 pub use tick_waiter::*;
+mod tick_delay;
+pub use tick_delay::*;
 #[cfg(feature = "std")]
 mod std_impls;
 #[cfg(feature = "std")]
@@ -69,6 +71,6 @@ pub trait TickInstant: Copy {
 }
 
 /// Can be implement for `yield`, `sleep` or do nothing.
-pub trait Interval {
+pub trait Interval: Clone {
     fn interval(&self);
 }

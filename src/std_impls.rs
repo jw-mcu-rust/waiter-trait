@@ -68,6 +68,7 @@ impl TickInstant for Instant {
     }
 }
 
+#[derive(Clone)]
 pub struct StdInterval {
     dur: Duration,
 }

@@ -1,7 +1,7 @@
 use super::*;
 
 /// Do nothing for interval
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct NonInterval {}
 
 impl NonInterval {

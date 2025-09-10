@@ -1,9 +1,6 @@
 use super::*;
 use core::marker::PhantomData;
 
-pub type TickWaiterUs<T, I> = TickWaiter<T, I, u32>;
-pub type TickWaiterNs<T, I> = TickWaiter<T, I, u64>;
-
 /// A waiter implementation for embedded system.
 pub struct TickWaiter<T, I, N> {
     timeout_tick: N,
@@ -11,7 +8,7 @@ pub struct TickWaiter<T, I, N> {
     _t: PhantomData<T>,
 }
 
-impl<T, I> TickWaiterUs<T, I>
+impl<T, I> TickWaiter<T, I, u32>
 where
     T: TickInstant,
     I: Interval,
@@ -30,7 +27,7 @@ where
     }
 }
 
-impl<T, I> TickWaiterNs<T, I>
+impl<T, I> TickWaiter<T, I, u64>
 where
     T: TickInstant,
     I: Interval,
@@ -128,7 +125,7 @@ mod tests {
 
     #[test]
     fn tick_waiter() {
-        let w = TickWaiterNs::<Instant, StdInterval>::ns(
+        let w = TickWaiter::<Instant, _, _>::ns(
             Duration::from_millis(10).as_nanos() as u64,
             StdInterval::new(Duration::from_millis(8)),
             Duration::from_secs(1).as_nanos() as u32,
