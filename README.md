@@ -20,9 +20,7 @@ fn foo(waiter: impl Waiter) {
         // Wait for something.
 
         // Reset if it's necessary.
-        {
-            t.restart();
-        }
+        t.restart();
 
         if t.timeout() {
             break;
