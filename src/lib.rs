@@ -28,7 +28,7 @@
 //! }
 //! ```
 //!
-//! ## Implementations
+//! # Implementations
 //!
 //! For developers, you can choose one of the following options.
 //! - Implement [`Waiter`] and [`WaiterTime`] then use them.
@@ -52,6 +52,11 @@ pub use tick_delay::*;
 mod std_impls;
 #[cfg(feature = "std")]
 pub use std_impls::*;
+
+pub use embedded_hal::delay::DelayNs;
+pub use fugit;
+
+pub mod prelude;
 
 pub trait Waiter {
     /// Start waiting.

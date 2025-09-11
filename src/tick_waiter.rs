@@ -1,5 +1,6 @@
 use super::*;
 use core::marker::PhantomData;
+use fugit::{NanosDurationU32, NanosDurationU64};
 
 /// A [`Waiter`] implementation for embedded system.
 ///
@@ -7,10 +8,10 @@ use core::marker::PhantomData;
 ///
 /// ```
 /// use std::time::{Duration, Instant};
-/// use waiter_trait::{Waiter, WaiterTime, TickWaiter, StdInterval};
+/// use waiter_trait::{prelude::*, TickWaiter, StdInterval};
 ///
-/// let w = TickWaiter::<Instant, _, _>::ns(
-///     Duration::from_millis(10).as_nanos() as u64,
+/// let w = TickWaiter::<Instant, _, _>::new_u64(
+///     10.millis().into(),
 ///     StdInterval::new(Duration::from_millis(8)),
 ///     Duration::from_secs(1).as_nanos() as u32,
 /// );
@@ -39,11 +40,12 @@ where
     T: TickInstant,
     I: Interval,
 {
-    pub fn us(timeout_us: u32, interval: I, frequency: u32) -> Self {
-        let timeout_tick = (timeout_us as u64)
-            .checked_mul(frequency as u64)
+    pub fn new(timeout: NanosDurationU32, interval: I, frequency: u32) -> Self {
+        assert_eq!(frequency % 1_000_000, 0);
+        let timeout_tick = (timeout.ticks() as u64)
+            .checked_mul((frequency / 1_000_000) as u64)
             .unwrap()
-            .div_ceil(1_000_000);
+            .div_ceil(1_000);
         assert!(timeout_tick <= u32::MAX as u64);
         Self {
             timeout_tick: timeout_tick as u32,
@@ -58,10 +60,11 @@ where
     T: TickInstant,
     I: Interval,
 {
-    /// It can wait longer with a nanosecond timeout.
-    pub fn ns(timeout_ns: u64, interval: I, frequency: u32) -> Self {
+    /// It can wait longer.
+    pub fn new_u64(timeout: NanosDurationU64, interval: I, frequency: u32) -> Self {
         assert_eq!(frequency % 1_000_000, 0);
-        let timeout_tick = timeout_ns
+        let timeout_tick = timeout
+            .ticks()
             .checked_mul((frequency / 1_000_000) as u64)
             .unwrap()
             .div_ceil(1_000);
