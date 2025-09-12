@@ -2,6 +2,34 @@ use super::*;
 
 /// The timeout condition is independent of time
 /// and is determined solely by the number of times `timeout()` is called.
+///
+/// # Example
+/// ```
+/// use waiter_trait::{prelude::*, Counter};
+///
+/// let c = Counter::new(0);
+/// let mut t = c.start();
+/// assert!(t.timeout());
+/// assert!(t.timeout());
+///
+/// let c = Counter::new(usize::MAX);
+/// let mut t = c.start();
+/// assert!(!t.timeout());
+/// assert!(!t.timeout());
+///
+/// let c = Counter::new(2);
+/// let mut t = c.start();
+/// assert!(!t.timeout());
+/// assert!(!t.timeout());
+/// assert!(t.timeout());
+/// assert!(t.timeout());
+///
+/// t.restart();
+/// assert!(!t.timeout());
+/// assert!(!t.timeout());
+/// assert!(t.timeout());
+/// assert!(t.timeout());
+/// ```
 pub struct Counter {
     retry_times: usize,
 }
@@ -48,36 +76,5 @@ impl<'a> WaiterTime for CounterInstance<'a> {
     #[inline(always)]
     fn restart(&mut self) {
         self.count = 0;
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn counter() {
-        let c = Counter::new(0);
-        let mut t = c.start();
-        assert!(t.timeout());
-        assert!(t.timeout());
-
-        let c = Counter::new(usize::MAX);
-        let mut t = c.start();
-        assert!(!t.timeout());
-        assert!(!t.timeout());
-
-        let c = Counter::new(2);
-        let mut t = c.start();
-        assert!(!t.timeout());
-        assert!(!t.timeout());
-        assert!(t.timeout());
-        assert!(t.timeout());
-
-        t.restart();
-        assert!(!t.timeout());
-        assert!(!t.timeout());
-        assert!(t.timeout());
-        assert!(t.timeout());
     }
 }
