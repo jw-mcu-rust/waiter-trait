@@ -1,6 +1,8 @@
 use super::*;
 use core::marker::PhantomData;
-use fugit::{NanosDurationU32, NanosDurationU64};
+use fugit::{
+    MicrosDurationU32, MicrosDurationU64, MillisDurationU32, NanosDurationU32, NanosDurationU64,
+};
 
 /// A [`Waiter`] implementation for embedded system.
 ///
@@ -10,7 +12,7 @@ use fugit::{NanosDurationU32, NanosDurationU64};
 /// use std::time::{Duration, Instant};
 /// use waiter_trait::{prelude::*, TickWaiter, StdInterval};
 ///
-/// let w = TickWaiter::<Instant, _, _>::new_u64(
+/// let w = TickWaiter::<Instant, _, _>::ns_u64(
 ///     10.millis().into(),
 ///     StdInterval::new(Duration::from_millis(8)),
 ///     Duration::from_secs(1).as_nanos() as u32,
@@ -40,7 +42,8 @@ where
     T: TickInstant,
     I: Interval,
 {
-    pub fn new(timeout: NanosDurationU32, interval: I, frequency: u32) -> Self {
+    /// If you want to wait longer, lower the frequency or/and use other initialization functions.
+    pub fn ns(timeout: NanosDurationU32, interval: I, frequency: u32) -> Self {
         assert_eq!(frequency % 1_000_000, 0);
         let timeout_tick = (timeout.ticks() as u64)
             .checked_mul((frequency / 1_000_000) as u64)
@@ -53,6 +56,24 @@ where
             _t: PhantomData,
         }
     }
+
+    pub fn us(timeout: MicrosDurationU32, interval: I, frequency: u32) -> Self {
+        assert_eq!(frequency % 1_000_000, 0);
+        Self {
+            timeout_tick: timeout.ticks().checked_mul(frequency / 1_000_000).unwrap(),
+            interval,
+            _t: PhantomData,
+        }
+    }
+
+    pub fn ms(timeout: MillisDurationU32, interval: I, frequency: u32) -> Self {
+        assert_eq!(frequency % 1_000, 0);
+        Self {
+            timeout_tick: timeout.ticks().checked_mul(frequency / 1_000).unwrap(),
+            interval,
+            _t: PhantomData,
+        }
+    }
 }
 
 impl<T, I> TickWaiter<T, I, u64>
@@ -60,16 +81,26 @@ where
     T: TickInstant,
     I: Interval,
 {
-    /// It can wait longer.
-    pub fn new_u64(timeout: NanosDurationU64, interval: I, frequency: u32) -> Self {
+    pub fn ns_u64(timeout: NanosDurationU64, interval: I, frequency: u32) -> Self {
         assert_eq!(frequency % 1_000_000, 0);
-        let timeout_tick = timeout
-            .ticks()
-            .checked_mul((frequency / 1_000_000) as u64)
-            .unwrap()
-            .div_ceil(1_000);
         Self {
-            timeout_tick,
+            timeout_tick: timeout
+                .ticks()
+                .checked_mul((frequency / 1_000_000) as u64)
+                .unwrap()
+                .div_ceil(1_000),
+            interval,
+            _t: PhantomData,
+        }
+    }
+
+    pub fn us_u64(timeout: MicrosDurationU64, interval: I, frequency: u32) -> Self {
+        assert_eq!(frequency % 1_000_000, 0);
+        Self {
+            timeout_tick: timeout
+                .ticks()
+                .checked_mul((frequency / 1_000_000) as u64)
+                .unwrap(),
             interval,
             _t: PhantomData,
         }

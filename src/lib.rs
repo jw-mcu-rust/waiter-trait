@@ -33,8 +33,9 @@
 //! For developers, you can choose one of the following options.
 //! - Implement [`Waiter`] and [`WaiterTime`] then use them.
 //! - Implement [`TickInstant`] and [`Interval`] then use [`TickWaiter`].
-//!     - If you want to do nothing in `interval()`, just use [`NonInterval`].
-//! - If you can't use a timer, you can consider to use [`Counter`]
+//!     - If you want to do nothing in the `interval()`, just give it [`NonInterval`],
+//!       and in this way you can use `DelayNs` separately.
+//! - Using [`Counter`], if you don't have any tick source.
 //!
 //! It also provides a implementation of `DelayNs` named [`TickDelay`]
 

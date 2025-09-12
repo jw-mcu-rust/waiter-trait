@@ -47,7 +47,7 @@ where
     T: TickInstant,
 {
     fn delay_ns(&mut self, ns: u32) {
-        let w = TickWaiter::<T, _, _>::new(ns.nanos(), NonInterval::new(), self.frequency);
+        let w = TickWaiter::<T, _, _>::ns(ns.nanos(), NonInterval::new(), self.frequency);
         let mut t = w.start();
         while !t.timeout() {}
     }
