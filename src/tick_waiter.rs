@@ -113,8 +113,8 @@ where
     T: TickInstant,
     I: Interval,
 {
-    fn start(&self) -> impl WaiterTime {
-        TickWaiterTime::<T, I, N> {
+    fn start(&self) -> impl WaiterStatus {
+        TickWaiterStatus::<T, I, N> {
             tick: T::now(),
             elapsed_tick: N::ZERO,
             waiter: self,
@@ -122,13 +122,13 @@ where
     }
 }
 
-pub struct TickWaiterTime<'a, T: TickInstant, I: Interval, N: Num> {
+pub struct TickWaiterStatus<'a, T: TickInstant, I: Interval, N: Num> {
     tick: T,
     elapsed_tick: N,
     waiter: &'a TickWaiter<T, I, N>,
 }
 
-impl<'a, T, I, N> WaiterTime for TickWaiterTime<'a, T, I, N>
+impl<'a, T, I, N> WaiterStatus for TickWaiterStatus<'a, T, I, N>
 where
     N: Num,
     T: TickInstant,

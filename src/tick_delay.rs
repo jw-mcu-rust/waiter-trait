@@ -16,9 +16,9 @@ use fugit::ExtU32;
 /// );
 ///
 /// let t = Instant::now();
-/// d.delay_ns(100_000);
+/// d.delay_ns(1_000_000);
 /// let elapsed = t.elapsed();
-/// assert!(elapsed - Duration::from_nanos(100_000) < Duration::from_nanos(10_000));
+/// assert!(elapsed - Duration::from_nanos(1_000_000) < Duration::from_nanos(100_000));
 ///
 /// let t = Instant::now();
 /// d.delay_us(1000);

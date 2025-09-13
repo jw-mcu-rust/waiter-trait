@@ -8,7 +8,7 @@ Traits used to wait and timeout in a `no-std` embedded system.
 ## Example
 
 ```rust
-use waiter_trait::{Waiter, WaiterTime, StdWaiter};
+use waiter_trait::{Waiter, WaiterStatus, StdWaiter};
 use std::time::Duration;
 
 // Initialize limit time and interval time.

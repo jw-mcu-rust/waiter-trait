@@ -10,7 +10,7 @@ use std::{
 ///
 /// ```
 /// use std::time::Duration;
-/// use waiter_trait::{Waiter, WaiterTime, StdWaiter};
+/// use waiter_trait::{Waiter, WaiterStatus, StdWaiter};
 ///
 /// let w = StdWaiter::new(Duration::from_millis(10), Some(Duration::from_millis(10)));
 /// let mut t = w.start();
@@ -39,20 +39,20 @@ impl StdWaiter {
 
 impl Waiter for StdWaiter {
     #[inline]
-    fn start(&self) -> impl WaiterTime {
-        StdWaiterInstance {
+    fn start(&self) -> impl WaiterStatus {
+        StdWaiterStatus {
             start_time: Instant::now(),
             waiter: self,
         }
     }
 }
 
-pub struct StdWaiterInstance<'a> {
+pub struct StdWaiterStatus<'a> {
     start_time: Instant,
     waiter: &'a StdWaiter,
 }
 
-impl<'a> WaiterTime for StdWaiterInstance<'a> {
+impl<'a> WaiterStatus for StdWaiterStatus<'a> {
     #[inline]
     fn timeout(&mut self) -> bool {
         if self.start_time.elapsed() >= self.waiter.timeout {

@@ -7,7 +7,7 @@
 //! # Examples
 //!
 //! ```
-//! use waiter_trait::{Waiter, WaiterTime, StdWaiter};
+//! use waiter_trait::{Waiter, WaiterStatus, StdWaiter};
 //! use std::time::Duration;
 //!
 //! // Initialize limit time and interval time.
@@ -31,8 +31,8 @@
 //! # Implementations
 //!
 //! For developers, you can choose one of the following options.
-//! - Implement [`Waiter`] and [`WaiterTime`] then use them.
-//! - Implement [`TickInstant`] and [`Interval`] then use [`TickWaiter`].
+//! - Implement [`Waiter`], [`TimedWaiter`], and [`WaiterStatus`] then use them.
+//! - Implement [`TickInstant`] and [`Interval`] then use [`TickWaiter`] or [`TimedTickWaiter`].
 //!     - If you want to do nothing in the `interval()`, just give it [`NonInterval`],
 //!       and in this way you can use `DelayNs` separately.
 //! - Using [`Counter`], if you don't have any tick source.
@@ -49,22 +49,30 @@ mod tick_waiter;
 pub use tick_waiter::*;
 mod tick_delay;
 pub use tick_delay::*;
+mod timed_tick_waiter;
+pub use timed_tick_waiter::*;
+
 #[cfg(feature = "std")]
 mod std_impls;
 #[cfg(feature = "std")]
 pub use std_impls::*;
 
 pub use embedded_hal::delay::DelayNs;
-pub use fugit;
+pub use fugit::{self, MicrosDurationU32};
 
 pub mod prelude;
 
 pub trait Waiter {
     /// Start waiting.
-    fn start(&self) -> impl WaiterTime;
+    fn start(&self) -> impl WaiterStatus;
 }
 
-pub trait WaiterTime {
+pub trait TimedWaiter {
+    /// Set timeout and start waiting.
+    fn start(&self, timeout: MicrosDurationU32) -> impl WaiterStatus;
+}
+
+pub trait WaiterStatus {
     /// Check if the time limit expires. This function may sleeps for a while,
     /// depends on the implementation.
     fn timeout(&mut self) -> bool;

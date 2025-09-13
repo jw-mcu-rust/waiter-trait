@@ -3,7 +3,8 @@ use super::*;
 /// The timeout condition is independent of time
 /// and is determined solely by the number of times `timeout()` is called.
 ///
-/// # Example
+/// # Examples
+///
 /// ```
 /// use waiter_trait::{prelude::*, Counter};
 ///
@@ -45,7 +46,7 @@ impl Counter {
 
 impl Waiter for Counter {
     #[inline]
-    fn start(&self) -> impl WaiterTime {
+    fn start(&self) -> impl WaiterStatus {
         CounterInstance {
             count: 0,
             waiter: self,
@@ -58,7 +59,7 @@ pub struct CounterInstance<'a> {
     waiter: &'a Counter,
 }
 
-impl<'a> WaiterTime for CounterInstance<'a> {
+impl<'a> WaiterStatus for CounterInstance<'a> {
     #[inline]
     fn timeout(&mut self) -> bool {
         if self.waiter.retry_times == usize::MAX {
