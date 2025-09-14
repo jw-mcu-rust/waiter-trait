@@ -46,6 +46,7 @@ impl<T> DelayNs for TickDelay<T>
 where
     T: TickInstant,
 {
+    #[inline]
     fn delay_ns(&mut self, ns: u32) {
         let w = TickWaiter::<T, _, _>::ns(ns.nanos(), NonInterval::new(), self.frequency);
         let mut t = w.start();

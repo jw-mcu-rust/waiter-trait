@@ -100,6 +100,7 @@ impl StdInterval {
 }
 
 impl Interval for StdInterval {
+    #[inline]
     fn interval(&self) {
         match self.dur {
             Duration::ZERO => yield_now(),
